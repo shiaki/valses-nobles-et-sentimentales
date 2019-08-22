@@ -5,7 +5,7 @@
     (using deconstructed matrix ODE)
 '''
 
-import shelve
+import pickle
 from sympy import Symbol, symbols, Matrix, Eq, \
         exp, solve, simplify, init_printing, latex
 init_printing(use_unicode=True)
@@ -89,7 +89,7 @@ if __name__ == '__main__':
     # 't' is not automatically eliminated here
 
     # simplify things. (very slow)
-    '''
+    # '''
     x_t = simplify(x_t)
     y_t = simplify(y_t)
     u_t = simplify(u_t)
@@ -98,12 +98,13 @@ if __name__ == '__main__':
     # '''
 
     # save global variables.
-    shelf = shelve.open('solution.pk', 'n')
+    shelf = dict()
     for k in dir():
-        if k[0] == '_': continue
-        try: shelf[k] = globals()[k]
-        except TypeError: continue
-    shelf.close()
+        if (k[0] == '_') or (k in ['shelf']): continue
+        try: shelf[k] = pickle.dumps(globals()[k])
+        except TypeError: continue # ignore un-pickables
+    with open('solution.pk', 'wb') as f:
+        pickle.dump(shelf, f)
 
     # save solution.
     with open('orbit-solution.tex', 'w') as f:

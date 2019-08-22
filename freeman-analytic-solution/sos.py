@@ -4,7 +4,7 @@
     Calculate SOS
 '''
 
-import shelve
+import pickle
 from sympy import Symbol, symbols, Matrix, Eq, \
         exp, solve, sqrt, simplify, init_printing, latex
 init_printing(use_unicode=True)
@@ -12,8 +12,11 @@ init_printing(use_unicode=True)
 if __name__ == '__main__':
 
     # read existing variables.
-    with shelve.open('solution.pk') as shelf:
-        for k in shelf: globals()[k] = shelf[k]
+    with open('solution.pk', 'rb') as f:
+        shelf = pickle.load(f)
+        for k in shelf:
+            if k == 'shelf': continue
+            globals()[k] = pickle.loads(shelf[k])
 
     # now let's assume that x0=0 (orbit starts at y-axis)
 
@@ -44,9 +47,9 @@ if __name__ == '__main__':
 
     # at least one of them is valid!
     with open('sos-solution.tex', 'w') as f:
-        if y0_sol:
+        if isinstance(y0_sol, list) and y0_sol:
             f.write('Solutions for $v_0$:\n')
             for s in y0_sol: f.write(latex(s) + '\n')
-        if v0_sol:
+        if isinstance(v0_sol, list) and v0_sol:
             f.write('Solutions for $y_0$:\n')
             for s in v0_sol: f.write(latex(s) + '\n')
