@@ -1,3 +1,8 @@
+.vscode
+*.tar.gz
+*.pk
+*.tex
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
