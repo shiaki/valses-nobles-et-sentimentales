@@ -1,0 +1,27 @@
+\documentclass[fleqn]{article}
+\usepackage[a1paper, margin=1in,landscape]{geometry}
+\usepackage{amsmath}
+\setlength{\mathindent}{64pt}
+
+\begin{document}
+
+Freeman's bar potential (with pattern speed $W$):
+\[ \Phi = \frac{1}{2}(A^2 x^2 + B^2 y^2) \]
+
+Define:
+\[ V^2 = \sqrt{A^2 + B^2 + W^2 + 2AB}\sqrt{A^2 + B^2 + W^2 - 2AB} \]
+\[ P = (A^2 + B^2) / 2; \qquad Q = (A^2 - B^2) / 2 \]
+\[ R = (V^2 + W^2) / 2; \qquad S = (V^2 - W^2) / 2 \]
+
+The orbital equation:
+\input{orbit-solution.tex}
+
+Where constants $a$, $b$, $c$, $d$ depends on the initial condition:
+\input{initconsts-solution.tex}
+
+The mean value and variance of angular momentum:
+\input{L-solution.tex}
+
+\end{document}
+
+  

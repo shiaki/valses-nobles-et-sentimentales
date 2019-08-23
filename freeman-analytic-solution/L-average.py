@@ -17,10 +17,13 @@ if __name__ == '__main__':
         sol = {k: pickle.loads(v) for k, v in sol_f.items()}
 
     # variable
-    t = Symbol('t', real=True)
+    t = sol['t']
 
     # constants in general solution.
+    A, B, W = sol['A'], sol['B'], sol['W']
     a, b, c, d = symbols('a, b, c, d',)
+
+    # eigenvalues and eigenvectors
     lam_1, lam_2 = symbols('l1, l2')
     K0x, K1x, K2x, K3x = symbols('K0x, K1x, K2x, K3x')
     K0y, K1y, K2y, K3y = symbols('K0y, K1y, K2y, K3y')
@@ -88,7 +91,6 @@ if __name__ == '__main__':
     L_var = simplify(L_var.subs(subst_dict))
 
     # define new symbols to make it easier,
-    A, B, W = sol['A'], sol['B'], sol['W']
     V = symbols('V', positive=True, real=True)
     P, Q, R, S = symbols('P, Q, R, S', real=True)
     subst_dict_aux = {
@@ -104,8 +106,8 @@ if __name__ == '__main__':
     _subs_2 = {expand(kk): vv for kk, vv in subst_dict_aux.items()}
     subst_dict_aux.update({**_subs_0, **_subs_1, **_subs_2})
 
-    L_avr = L_avr.subs(subst_dict_aux)
-    L_var = L_var.subs(subst_dict_aux)
+    L_avr = simplify(L_avr.subs(subst_dict_aux))
+    L_var = simplify(L_var.subs(subst_dict_aux))
 
     x0, y0, u0, v0 = sol['x0'], sol['y0'], sol['u0'], sol['v0']
 
@@ -131,3 +133,9 @@ if __name__ == '__main__':
         except TypeError: continue # ignore un-pickables
     with open('L-solution.pk', 'wb') as f:
         pickle.dump(shelf, f)
+
+    # save solution.
+    with open('L-solution.tex', 'w') as f:
+        for sym_t, expr_t in [('L', latex(L_avr)), \
+                ('\mathrm{Var}(L)', latex(L_var))]:
+            f.write('\[\n{:}={:}\n\]\n'.format(sym_t, expr_t))

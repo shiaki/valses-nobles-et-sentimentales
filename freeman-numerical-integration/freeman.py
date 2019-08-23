@@ -42,8 +42,11 @@ def rk4int(w_init, Asq, Bsq, Omega, dt, N_step):
 
 if __name__ == '__main__':
 
-    # initial contidion
-    w_init = [0., 3., 3., 0]
+    A, B, W = 0.99, 4.01, 1.375 # slow bar,
+    x0, y0, u0, v0 = 0., 1., 0., 1.2 # from y-axis,
 
-    orb = rk4int(w_init, 4., 1.2, 1., 1.e-3, 100000)
+    # initial contidion
+    w_init = [x0, y0, u0, v0]
+
+    orb = rk4int(w_init, A ** 2, B ** 2, W, 1.e-3, int(200 / 1.e-3))
     plt.plot(orb[0, :, 0], orb[0, :, 1]), plt.show()

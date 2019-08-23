@@ -7,7 +7,8 @@
 
 import pickle
 from sympy import Symbol, symbols, Matrix, Eq, \
-        exp, solve, simplify, init_printing, latex
+        exp, sqrt, solve, expand, simplify, \
+        init_printing, latex
 init_printing(use_unicode=True)
 
 if __name__ == '__main__':
@@ -61,6 +62,24 @@ if __name__ == '__main__':
         + c * exp(lam[2] * t) * vec[2][0][3] \
         + d * exp(lam[3] * t) * vec[3][0][3]
 
+    # decomposed two components.
+    x_p = a * exp(lam[0] * t) * vec[0][0][0] \
+        + b * exp(lam[1] * t) * vec[1][0][0] 
+    y_p = a * exp(lam[0] * t) * vec[0][0][1] \
+        + b * exp(lam[1] * t) * vec[1][0][1] 
+    u_p = a * exp(lam[0] * t) * vec[0][0][2] \
+        + b * exp(lam[1] * t) * vec[1][0][2] 
+    v_p = a * exp(lam[0] * t) * vec[0][0][3] \
+        + b * exp(lam[1] * t) * vec[1][0][3] 
+    x_q = c * exp(lam[2] * t) * vec[2][0][0] \
+        + d * exp(lam[3] * t) * vec[3][0][0]
+    y_q = c * exp(lam[2] * t) * vec[2][0][1] \
+        + d * exp(lam[3] * t) * vec[3][0][1]
+    u_q = c * exp(lam[2] * t) * vec[2][0][2] \
+        + d * exp(lam[3] * t) * vec[3][0][2]
+    v_q = c * exp(lam[2] * t) * vec[2][0][3] \
+        + d * exp(lam[3] * t) * vec[3][0][3]
+
     # initial conditions --> const in solution.
     x0, y0, u0, v0 = symbols('x0, y0, u0, v0', real=True)
     ic_consts = solve(
@@ -79,6 +98,16 @@ if __name__ == '__main__':
     u_t = u.subs(ic_consts)
     v_t = v.subs(ic_consts)
 
+    # two components.
+    x_p = x_p.subs(ic_consts)
+    y_p = y_p.subs(ic_consts)
+    u_p = u_p.subs(ic_consts)
+    v_p = v_p.subs(ic_consts)
+    x_q = x_q.subs(ic_consts)
+    y_q = y_q.subs(ic_consts)
+    u_q = u_q.subs(ic_consts)
+    v_q = v_q.subs(ic_consts)
+
     # define orbital integral Ej0,
     Ej0 = Symbol('Ej0', real=True)
 
@@ -88,15 +117,6 @@ if __name__ == '__main__':
         - (x_t ** 2 + y_t ** 2) * W ** 2 / 2
     # 't' is not automatically eliminated here
 
-    # simplify things. (very slow)
-    # '''
-    x_t = simplify(x_t)
-    y_t = simplify(y_t)
-    u_t = simplify(u_t)
-    v_t = simplify(v_t)
-    Ej  = simplify(Ej)
-    # '''
-
     # save global variables.
     shelf = dict()
     for k in dir():
@@ -105,7 +125,3 @@ if __name__ == '__main__':
         except TypeError: continue # ignore un-pickables
     with open('solution.pk', 'wb') as f:
         pickle.dump(shelf, f)
-
-    # save solution.
-    with open('orbit-solution.tex', 'w') as f:
-        f.write('\n'.join([latex(k) for k in [x_t, y_t, u_t, v_t]]))
