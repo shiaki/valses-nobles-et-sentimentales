@@ -84,42 +84,45 @@ if __name__ == '__main__':
     }
 
     # full expression:
-    L_avr_f = simplify(L_avr.subs(subst_dict))
-    L_var_f = simplify(L_var.subs(subst_dict))
+    L_avr = simplify(L_avr.subs(subst_dict))
+    L_var = simplify(L_var.subs(subst_dict))
 
     # define new symbols to make it easier,
     A, B, W = sol['A'], sol['B'], sol['W']
-    P, Q, R, S = symbols('P, Q, R, S', positive=True, real=True)
-    subst_dict = {
-        A ** 2 + 2 * A * B + B ** 2 + W ** 2: P ** 2,
-        A ** 2 - 2 * A * B + B ** 2 + W ** 2: Q ** 2,
-        A ** 4 - 2 * A ** 2 * B ** 2 + 2 * A ** 2 * W ** 2 \
-            + B ** 4 + 2 * B ** 2 * W ** 2 + W ** 4: P ** 2 * Q ** 2,
-        A ** 2 + B ** 2 + W ** 2: R ** 2,
-        B ** 2 - A ** 2: S ** 2
+    V = symbols('V', positive=True, real=True)
+    P, Q, R, S = symbols('P, Q, R, S', real=True)
+    subst_dict_aux = {
+        sqrt(A ** 2 + 2 * A * B + B ** 2 + W ** 2) \
+                * sqrt(A ** 2 - 2 * A * B + B ** 2 + W ** 2): V ** 2,
+        (A ** 2 + B ** 2) / 2: P,
+        (A ** 2 - B ** 2) / 2: Q,
+        (V ** 2 + W ** 2) / 2: R,
+        (V ** 2 - W ** 2) / 2: S,
     }
-    subst_dict.update({expand(2 * kk): 2 * vv \
-                       for kk, vv in subst_dict.items()}) # sympy is stupid
+    _subs_0 = {expand(2 * kk): 2 * vv for kk, vv in subst_dict_aux.items()}
+    _subs_1 = {simplify(kk): vv for kk, vv in subst_dict_aux.items()}
+    _subs_2 = {expand(kk): vv for kk, vv in subst_dict_aux.items()}
+    subst_dict_aux.update({**_subs_0, **_subs_1, **_subs_2})
+
+    L_avr = L_avr.subs(subst_dict_aux)
+    L_var = L_var.subs(subst_dict_aux)
 
     x0, y0, u0, v0 = sol['x0'], sol['y0'], sol['u0'], sol['v0']
 
     # consts in general solution with aux variables P, Q, R
-    a_p = simplify(sol['ic_consts'][a].subs(subst_dict))
-    b_p = simplify(sol['ic_consts'][b].subs(subst_dict))
-    c_p = simplify(sol['ic_consts'][c].subs(subst_dict))
-    d_p = simplify(sol['ic_consts'][d].subs(subst_dict))
+    a_p = simplify(sol['ic_consts'][a].subs(subst_dict_aux))
+    b_p = simplify(sol['ic_consts'][b].subs(subst_dict_aux))
+    c_p = simplify(sol['ic_consts'][c].subs(subst_dict_aux))
+    d_p = simplify(sol['ic_consts'][d].subs(subst_dict_aux))
 
-    L_avr_f = L_avr_f.subs(subst_dict)
-    L_var_f = L_var_f.subs(subst_dict)
-
-    subst_dict = {
-        a * b: simplify(a_p * b_p), 
-        c * d: simplify(c_p * d_p), 
+    subst_dict_consts = {
+        a * b: simplify(a_p * b_p).subs(subst_dict_aux),
+        c * d: simplify(c_p * d_p).subs(subst_dict_aux),
     }
 
     # full expression with x0, y0, u0, v0 as free parameters.
-    L_avr_f = cancel(L_avr_f.subs(subst_dict))
-    L_var_f = cancel(L_var_f.subs(subst_dict))
+    L_avr_f = L_avr.subs(subst_dict_consts).subs(subst_dict_aux)
+    L_var_f = L_var.subs(subst_dict_consts).subs(subst_dict_aux)
 
     # save global variables.
     shelf = dict()
