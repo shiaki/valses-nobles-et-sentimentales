@@ -7,7 +7,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def make_init(A, B, W, ic_radius, N_pts, EJ_t):
+def makeinit(A, B, W, ic_radius, N_pts, EJ_t):
 
     # calculate EJ at edge of domain,
     EJ_a = (A * ic_radius) ** 2 / 2 - (W * ic_radius) ** 2 / 2
@@ -49,7 +49,7 @@ if __name__ == '__main__':
     EJ_t = 2.
 
     # try to make initial condition,
-    ic_pts = make_init(A, B, W, ic_radius, N_pts, EJ_t)
+    ic_pts = makeinit(A, B, W, ic_radius, N_pts, EJ_t)
 
 if (__name__ == '__main__') and None:
 

@@ -1,5 +1,6 @@
 # editor
 .vscode
+settings.json
 
 # packages
 *.tar.gz
