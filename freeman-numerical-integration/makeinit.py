@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 
 '''
     Generates initial condition from EJ
@@ -7,13 +7,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Model parameters.
-A, B, W = 1., 2., 1. # slow bar,
-ic_radius = 10. # maximal radius for init condition.
-N_pts = 1000
-EJ_t = 2.
-
-if __name__ == '__main__':
+def make_init(A, B, W, ic_radius, N_pts, EJ_t):
 
     # calculate EJ at edge of domain,
     EJ_a = (A * ic_radius) ** 2 / 2 - (W * ic_radius) ** 2 / 2
@@ -41,22 +35,30 @@ if __name__ == '__main__':
         u_i, v_i = vel_i * w_i / np.linalg.norm(w_i)
 
         # put into list,
-        ic_pts.append((x_i, y_i, u_i, v_i))
+        ic_pts.append((x_i, y_i, u_i, v_i,))
 
+    # convert to numpy
+    return np.array(ic_pts)
 
+if __name__ == '__main__':
+
+    # Model parameters.
+    A, B, W = 1., 2., 0.5 # slow bar,
+    ic_radius = 10. # maximal radius for init condition.
+    N_pts = 1000
+    EJ_t = 2.
+
+    # try to make initial condition,
+    ic_pts = make_init(A, B, W, ic_radius, N_pts, EJ_t)
 
 if (__name__ == '__main__') and None:
 
     # draw EJ
     ax = np.linspace(-5, 5, 501)
     xx, yy = np.meshgrid(ax, ax)
-
     EJ_x  = (A * ax) ** 2 / 2 - (ax ** 2) * W ** 2 / 2
     EJ_y  = (B * ax) ** 2 / 2 - (ax ** 2) * W ** 2 / 2
     EJ_xy = ((A * xx) ** 2 + (B * yy) ** 2) / 2 \
           - (xx ** 2 + yy ** 2) * W ** 2 / 2
-
-    plt.plot(ax, EJ_x)
-    plt.plot(ax, EJ_y)
-    plt.show()
-    # plt.imshow(EJ_xy), plt.colorbar(), plt.show()
+    plt.plot(ax, EJ_x); plt.plot(ax, EJ_y); plt.show()
+    plt.imshow(EJ_xy), plt.colorbar(), plt.show()
