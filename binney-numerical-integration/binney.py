@@ -7,7 +7,7 @@ from tqdm import tqdm, trange
 import numpy as np
 import matplotlib.pyplot as plt
 
-def rk4int(w_init, Vsq, Rsq, Qsq, Omega_p, dt, N_step):
+def rk4int(w_init, Vsq, Rsq, Qsq, Omega_p, dt, N_step, desc=''):
 
     ''' Integrate orbits in Freeman's potential using RK4 integrator. '''
 
@@ -17,16 +17,16 @@ def rk4int(w_init, Vsq, Rsq, Qsq, Omega_p, dt, N_step):
     orb = np.zeros((N_step, 4, N_orb))
     orb[0, :, :] = w0
 
-    def f(x, y, u, v, dt, Vsq, Rsq, Qsq, Op):
-        S = Vsq / (Rsq + x ** 2 + y ** 2 / Qsq)
+    def f(x, y, u, v, dt, Vsq, Rsq, Qsq, Op2, Opsq):
+        S = -Vsq / (Rsq + x ** 2 + y ** 2 / Qsq)
         return dt * u, \
                dt * v, \
-              -dt * (S * x       + Op * v), \
-              -dt * (S * y / Qsq - Op * u)
+               dt * (S * x       + Op2 * v + Opsq * x), \
+               dt * (S * y / Qsq - Op2 * u + Opsq * y)
 
     xi, yi, ui, vi = w0
-    par = (dt, Vsq, Rsq, Qsq, Omega_p)
-    for i_step in trange(1, N_step):
+    par = (dt, Vsq, Rsq, Qsq, 2. * Omega_p, Omega_p ** 2)
+    for i_step in trange(1, N_step, desc=desc):
         x1, y1, u1, v1 = f(xi,          yi,          ui,          vi         , *par)
         x2, y2, u2, v2 = f(xi + x1 / 2, yi + y1 / 2, ui + u1 / 2, vi + v1 / 2, *par)
         x3, y3, u3, v3 = f(xi + x2 / 2, yi + y2 / 2, ui + u2 / 2, vi + v2 / 2, *par)
